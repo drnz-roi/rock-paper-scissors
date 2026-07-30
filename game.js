@@ -9,40 +9,56 @@ function getComputerChoice() {
   }
 }
 
-function getHumanChoice() {
-  const humanChoice = prompt("Enter your choice: rock, paper, or scissors");
-  return humanChoice;
-}
-
 let humanScore = 0;
 let computerScore = 0;
 
+const resultsDiv = document.querySelector("#results");
+const scoreDiv = document.querySelector("#score");
+const buttonsDiv = document.querySelector("#buttons");
+
 function playRound(humanChoice, computerChoice) {
-  humanChoice = humanChoice.toLowerCase();
+  let roundMessage;
 
   if (humanChoice === computerChoice) {
-    console.log(`It's a tie! Both chose ${computerChoice}`);
-    return;
+    roundMessage = `It's a tie! Both chose ${computerChoice}`;
+  } else {
+    const beats = {
+      rock: "scissors",
+      paper: "rock",
+      scissors: "paper"
+    };
+
+    if (beats[humanChoice] === computerChoice) {
+      humanScore++;
+      roundMessage = `You Win! ${humanChoice} beats ${computerChoice}`;
+    } else {
+      computerScore++;
+      roundMessage = `You Lose! ${computerChoice} beats ${humanChoice}`;
+    }
   }
 
-  const beats = {
-    rock: "scissors",
-    paper: "rock",
-    scissors: "paper"
-  };
+  resultsDiv.textContent = roundMessage;
+  scoreDiv.textContent = `Human: ${humanScore}, Computer: ${computerScore}`;
 
-  if (beats[humanChoice] === computerChoice) {
-    humanScore++;
-    console.log(`You Win! ${humanChoice} beats ${computerChoice}`);
-  } else {
-    computerScore++;
-    console.log(`You Lose! ${computerChoice} beats ${humanChoice}`);
+  checkForWinner();
+}
+
+function checkForWinner() {
+  if (humanScore === 5 || computerScore === 5) {
+    const winner = humanScore === 5 ? "You win the game!" : "Computer wins the game!";
+    resultsDiv.textContent = winner;
+    buttonsDiv.querySelectorAll("button").forEach((button) => {
+      button.disabled = true;
+    });
   }
 }
 
-const humanSelection = getHumanChoice();
-const computerSelection = getComputerChoice();
+function handleClick(event) {
+  const humanChoice = event.target.id;
+  const computerChoice = getComputerChoice();
+  playRound(humanChoice, computerChoice);
+}
 
-playRound(humanSelection, computerSelection);
-
-console.log(`Human: ${humanScore}, Computer: ${computerScore}`);
+buttonsDiv.querySelectorAll("button").forEach((button) => {
+  button.addEventListener("click", handleClick);
+});
